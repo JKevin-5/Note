@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".Main3Activity"
     android:background="#e1e1e1"
     android:focusable="true"
     android:focusableInTouchMode="true"
@@ -46,7 +46,6 @@
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
             android:background="@drawable/search"
-            android:scaleType="fitXY"
             />
     </LinearLayout>
 
@@ -72,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="15dp"
-            android:src="@drawable/add"
+            android:src="@drawable/home"
             />
     </FrameLayout>
 

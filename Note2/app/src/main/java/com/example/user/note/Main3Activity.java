@@ -3,15 +3,14 @@ package com.example.user.note;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,9 +25,8 @@ import presenter.DataBaseHelper;
 import presenter.MyDatabase;
 import presenter.NotesAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class Main3Activity extends AppCompatActivity {
 
-    //private List<Notes> notesList = new ArrayList<>();
     private DataBaseHelper dbHelper;
     ListView listView;
     LayoutInflater layoutInflater;
@@ -40,44 +38,47 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main3);
 
+        //toolbar设置
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        //声明listView
         listView = (ListView) findViewById(R.id.list_view);
+        //声明悬浮按钮
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add);
         layoutInflater = getLayoutInflater();
-
-        myDatabase = new MyDatabase(this);
-        notesList = myDatabase.getarray();
-        NotesAdapter adapter = new NotesAdapter(layoutInflater,notesList);
-        listView.setAdapter(adapter);
+        //声明搜索框
         editText = (EditText) findViewById(R.id.search);
+        //声明搜索按钮
         button = (ImageButton) findViewById(R.id.search_button);
         button.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-        //dbHelper = new DataBaseHelper(this,"Note.db",null,1);
+        Intent intent = getIntent();
+        String s = intent.getStringExtra("extra_data");
+        Log.v("Tag",s);
+        editText.setText(s);
 
-        //创建数据库表格
-        //dbHelper.getWritableDatabase();
-
-        //initNotes();//初始化便签数据
-        //NotesAdapter adapter = new NotesAdapter(MainActivity.this,R.layout.note_item,notesList);
-        //listView.setAdapter(adapter);
+        myDatabase = new MyDatabase(this);
+        notesList = myDatabase.getSearch(s);
+        NotesAdapter adapter = new NotesAdapter(layoutInflater,notesList);
+        listView.setAdapter(adapter);
 
         //列表点击事件
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
-            public void onItemClick(AdapterView<?> parent,View view,int position,long id){//点击一次事件
-               Intent intent = new Intent(getApplicationContext(),Main2Activity.class);
-               intent.putExtra("id",notesList.get(position).getId());
-               startActivity(intent);
-               MainActivity.this.finish();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){//点击一次事件
+                Intent intent = new Intent(getApplicationContext(),Main2Activity.class);
+                intent.putExtra("id",notesList.get(position).getId());
+                startActivity(intent);
+                Main3Activity.this.finish();
             }
         });
         //列表长按事件
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view,final int position,long id) {
-                new AlertDialog.Builder(MainActivity.this) //弹出一个对话框
+                new AlertDialog.Builder(Main3Activity.this) //弹出一个对话框
                         //.setTitle("确定要删除此便签？")
                         .setMessage("确定要删除此便签？")
                         .setNegativeButton("取消",new DialogInterface.OnClickListener(){
@@ -102,31 +103,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //搜索按钮点击事件
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String s;
-                s = editText.getText().toString();
-                Intent intent = new Intent(MainActivity.this,Main3Activity.class);
-                intent.putExtra("extra_data",s);
-                startActivity(intent);
-            }
-        });
-
-
-        //toolbar设置
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //悬浮按钮点击事件
+        //悬浮按钮点击事件(返回主界面)
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,Main2Activity.class);
+                Intent intent = new Intent(Main3Activity.this,MainActivity.class);
                 startActivity(intent);
-                //MainActivity.this.finish();
+                Main3Activity.this.finish();
 
                 /*
                 Snackbar.make(view, "A blank note has been created ", Snackbar.LENGTH_LONG).setAction("Back", new View.OnClickListener() {
@@ -137,47 +121,19 @@ public class MainActivity extends AppCompatActivity {
                         }).show();*/
             }
         });
+        //搜索按钮点击事件
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String s;
+                s = editText.getText().toString();
+                Intent intent = new Intent(Main3Activity.this,Main3Activity.class);
+                intent.putExtra("extra_data",s);
+                startActivity(intent);
+            }
+        });
     }
 
-
-    /*
-    //初始化NoteList
-    public void initNotes(){
-        for(int i=0;i<8;i++){
-            Notes A = new Notes("A","2018");
-            notesList.add(A);
-            Notes B = new Notes("B","2018");
-            notesList.add(B);
-            Notes C = new Notes("C","2018");
-            notesList.add(C);
-            Notes D = new Notes("D","2018");
-            notesList.add(D);
-
-        }
-    }
-    */
-    //菜单按键
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
     @Override
     public void onBackPressed() {
         //super.onBackPressed();//要去掉这句，否则会结束当前Activity，无法起到屏蔽的作用
